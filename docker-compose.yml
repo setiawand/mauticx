@@ -1,0 +1,53 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: mauticx
+      POSTGRES_USER: mauticx
+      POSTGRES_PASSWORD: mauticx
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    volumes:
+      - redisdata:/data
+
+  api:
+    build: ./backend
+    environment:
+      POSTGRES_DB: mauticx
+      POSTGRES_USER: mauticx
+      POSTGRES_PASSWORD: mauticx
+    env_file: .env
+    depends_on: [db, redis]
+    labels:
+    - traefik.http.routers.api.rule=Host(`api.local.test`)
+    - traefik.http.services.api.loadbalancer.server.port=8000
+
+  worker:
+    build: ./worker
+    env_file: .env
+    depends_on: [api, db, redis]
+
+    web:
+      build: ./web
+      env_file: .env
+      depends_on: [api]
+      labels:
+        - traefik.http.routers.web.rule=Host(`app.local.test`)
+        - traefik.http.services.web.loadbalancer.server.port=3000
+
+volumes:
+  dbdata: {}
