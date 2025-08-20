@@ -60,9 +60,9 @@ const tenants = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { isOpen } = useMediaQuery();
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [isClient, setIsClient] = React.useState(false);
   const handleSwitchTenant = (_tenantId: string) => {
     // Tenant switching functionality would be implemented here
   };
@@ -70,8 +70,8 @@ export default function AppSidebar() {
   const activeTenant = tenants[0];
 
   React.useEffect(() => {
-    // Side effects based on sidebar state changes
-  }, [isOpen]);
+    setIsClient(true);
+  }, []);
 
   return (
     <Sidebar collapsible='icon'>
@@ -99,7 +99,7 @@ export default function AppSidebar() {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}
-                        isActive={pathname === item.url}
+                        isActive={isClient && pathname === item.url}
                       >
                         {item.icon && <Icon />}
                         <span>{item.title}</span>
@@ -112,7 +112,7 @@ export default function AppSidebar() {
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
-                              isActive={pathname === subItem.url}
+                              isActive={isClient && pathname === subItem.url}
                             >
                               <Link href={subItem.url}>
                                 <span>{subItem.title}</span>
@@ -129,7 +129,7 @@ export default function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     tooltip={item.title}
-                    isActive={pathname === item.url}
+                    isActive={isClient && pathname === item.url}
                   >
                     <Link href={item.url}>
                       <Icon />
