@@ -8,6 +8,7 @@ import { AddContactModal } from '@/components/contacts/add-contact-modal';
 import { BulkUploadModal } from '@/components/contacts/bulk-upload-modal';
 import { apiClient, Contact } from '@/lib/api-client';
 import { toast } from 'sonner';
+import PageContainer from '@/components/layout/page-container';
 
 export default function ContactsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,20 +47,26 @@ export default function ContactsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Contacts</h1>
-        <div className="flex gap-2">
-          <Button onClick={() => setIsModalOpen(true)}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Contact
-          </Button>
-          <Button variant="outline" onClick={() => setIsBulkUploadModalOpen(true)}>
-            <Upload className="mr-2 h-4 w-4" />
-            Bulk Upload
-          </Button>
+    <PageContainer scrollable>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Contacts</h2>
+            <p className="text-muted-foreground">
+              Manage your contact database and subscriber lists
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={() => setIsModalOpen(true)}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add Contact
+            </Button>
+            <Button variant="outline" onClick={() => setIsBulkUploadModalOpen(true)}>
+              <Upload className="mr-2 h-4 w-4" />
+              Bulk Upload
+            </Button>
+          </div>
         </div>
-      </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -185,6 +192,7 @@ export default function ContactsPage() {
         onClose={() => setIsBulkUploadModalOpen(false)}
         onSuccess={handleContactAdded}
       />
-    </div>
+      </div>
+    </PageContainer>
   );
 }

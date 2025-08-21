@@ -24,7 +24,7 @@ import { signInSchema, type SignInFormData } from '@/lib/validations/auth';
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, error, clearError } = useAuth();
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -36,10 +36,11 @@ export default function SignInForm() {
 
   const onSubmit = async (data: SignInFormData) => {
     try {
+      clearError(); // Clear any previous errors
       await login(data.email, data.password);
       // Redirect will be handled by AuthProvider
     } catch (err) {
-      // Error handling
+      // Error is already handled by auth store
       console.error('Login failed:', err);
     }
   };
@@ -55,7 +56,11 @@ export default function SignInForm() {
         </p>
       </div>
 
-      {/* Error handling can be added here if needed */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

@@ -26,7 +26,7 @@ export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
-  const { register, isLoading } = useAuth();
+  const { register, isLoading, error, clearError } = useAuth();
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -41,10 +41,11 @@ export default function SignUpForm() {
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
+      clearError(); // Clear any previous errors
       await register(data.email, data.password, data.fullName);
       // Redirect will be handled by AuthProvider
     } catch (err) {
-      // Error handling
+      // Error is already handled by auth store
       console.error('Registration failed:', err);
     }
   };
@@ -60,7 +61,11 @@ export default function SignUpForm() {
         </p>
       </div>
 
-      {/* Error handling can be added here if needed */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

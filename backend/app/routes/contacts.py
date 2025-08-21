@@ -114,37 +114,56 @@ async def bulk_upload_contacts(
         
         for index, row in df.iterrows():
             try:
-                # Create contact data
-                contact_data = {
-                    'email': row.get('email', '').strip(),
-                    'first_name': row.get('first_name', '').strip() if pd.notna(row.get('first_name')) else None,
-                    'last_name': row.get('last_name', '').strip() if pd.notna(row.get('last_name')) else None,
-                    'phone': row.get('phone', '').strip() if pd.notna(row.get('phone')) else None,
-                    'company': row.get('company', '').strip() if pd.notna(row.get('company')) else None,
-                    'tags': row.get('tags', '').strip() if pd.notna(row.get('tags')) else None
-                }
+                # Extract and clean data
+                email = str(row.get('email', '')).strip() if pd.notna(row.get('email')) else ''
+                first_name = str(row.get('first_name', '')).strip() if pd.notna(row.get('first_name')) else None
+                last_name = str(row.get('last_name', '')).strip() if pd.notna(row.get('last_name')) else None
+                phone = str(row.get('phone', '')).strip() if pd.notna(row.get('phone')) else None
+                company = str(row.get('company', '')).strip() if pd.notna(row.get('company')) else None
+                tags_str = str(row.get('tags', '')).strip() if pd.notna(row.get('tags')) else None
                 
                 # Skip if email is empty
-                if not contact_data['email']:
+                if not email:
                     errors.append(f"Row {index + 2}: Email is required")
                     continue
                 
                 # Check if contact already exists
-                existing_contact = db.query(Contact).filter(Contact.email == contact_data['email']).first()
+                existing_contact = db.query(Contact).filter(Contact.email == email).first()
                 if existing_contact:
-                    errors.append(f"Row {index + 2}: Contact with email {contact_data['email']} already exists")
+                    errors.append(f"Row {index + 2}: Contact with email {email} already exists")
                     continue
+                
+                # Prepare attributes
+                attributes = {}
+                if first_name:
+                    attributes['first_name'] = first_name
+                if last_name:
+                    attributes['last_name'] = last_name
+                if phone:
+                    attributes['phone'] = phone
+                if company:
+                    attributes['company'] = company
+                
+                # Prepare tags
+                tags = []
+                if tags_str:
+                    tags = [tag.strip() for tag in tags_str.split(',') if tag.strip()]
                 
                 # Create new contact
                 contact = Contact(
-                    email=contact_data['email'],
-                    first_name=contact_data['first_name'],
-                    last_name=contact_data['last_name'],
-                    phone=contact_data['phone'],
-                    company=contact_data['company'],
-                    tags=contact_data['tags'],
-                    user_id=current_user.id
+                    email=email,
+                    attributes=attributes,
+                    tags=tags
                 )
+                
+                contact_data = {
+                    'email': email,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'phone': phone,
+                    'company': company,
+                    'tags': tags_str
+                }
                 
                 db.add(contact)
                 created_contacts.append(contact_data)

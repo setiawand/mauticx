@@ -9,16 +9,59 @@ from ..segments.compiler import compile_segment
 
 router = APIRouter(prefix="/segments", tags=["segments"])
 
-@router.get("", response_model=List[dict])
+@router.get("", response_model=dict)
 def list_segments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Get list of segments"""
     segments = db.query(Segment).offset(skip).limit(limit).all()
-    return [{
+    
+    # If no segments exist, create some sample segments
+    if not segments:
+        sample_segments = [
+            {
+                "name": "All Subscribers",
+                "definition": {
+                    "op": "AND",
+                    "filters": [
+                        {"field": "email", "op": "contains", "value": "@"}
+                    ]
+                }
+            },
+            {
+                "name": "VIP Customers",
+                "definition": {
+                    "op": "AND",
+                    "filters": [
+                        {"field": "tags", "op": "contains", "value": "vip"}
+                    ]
+                }
+            },
+            {
+                "name": "Newsletter Subscribers",
+                "definition": {
+                    "op": "AND",
+                    "filters": [
+                        {"field": "tags", "op": "contains", "value": "newsletter"}
+                    ]
+                }
+            }
+        ]
+        
+        for segment_data in sample_segments:
+            segment = Segment(
+                name=segment_data["name"],
+                definition=segment_data["definition"]
+            )
+            db.add(segment)
+        
+        db.commit()
+        segments = db.query(Segment).offset(skip).limit(limit).all()
+    
+    return {"data": [{
         "id": s.id,
         "name": s.name,
         "definition": s.definition,
         "materialized_at": s.materialized_at
-    } for s in segments]
+    } for s in segments]}
 
 @router.post("", response_model=dict)
 def create_segment(segment_data: SegmentIn, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

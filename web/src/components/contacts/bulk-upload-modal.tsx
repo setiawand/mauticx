@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, FileText, AlertCircle, CheckCircle, X, Download } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 interface BulkUploadModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export function BulkUploadModal({ isOpen, onClose, onSuccess }: BulkUploadModalP
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token } = useAuthStore();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -132,7 +134,7 @@ export function BulkUploadModal({ isOpen, onClose, onSuccess }: BulkUploadModalP
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/contacts/bulk-upload`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         },
         body: formData,
       });

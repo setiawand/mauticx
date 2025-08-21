@@ -8,9 +8,11 @@ interface AuthContextType {
   user: any;
   isAuthenticated: boolean;
   isLoading: boolean;
+  error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => void;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,20 +34,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isAuthenticated,
     isLoading,
+    error,
     login,
     register,
-    logout
+    logout,
+    clearError
   } = useAuthStore();
   
   const router = useRouter();
 
   useEffect(() => {
     // Authentication state is automatically restored from localStorage by Zustand persist
-    // No need for explicit checkAuth call
+    // No need for explicit checkAuth call or redirects here
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
     await login(email, password);
+    // Redirect to dashboard after successful login
     router.push('/dashboard');
   };
 
@@ -63,9 +68,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isAuthenticated,
     isLoading,
+    error,
     login: handleLogin,
     register: handleRegister,
-    logout: handleLogout
+    logout: handleLogout,
+    clearError
   };
 
   return (

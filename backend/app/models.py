@@ -53,6 +53,7 @@ class Campaign(Base):
     segment_id: Mapped[int] = mapped_column(ForeignKey("segment.id"))
     send_at: Mapped[Optional[str]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(String(32), default="draft")
+    custom_content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Custom MJML content for this campaign
 
 class CampaignRecipient(Base):
     __tablename__ = "campaign_recipient"

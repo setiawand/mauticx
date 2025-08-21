@@ -1,0 +1,48 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - region "Notifications alt+T"
+  - generic [ref=e2]:
+    - link "Sign Up" [ref=e3]:
+      - /url: /auth/sign-up
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - text: MauticX
+      - blockquote [ref=e10]:
+        - paragraph [ref=e11]: “MauticX has revolutionized our email marketing campaigns and helped us achieve better engagement with our customers.”
+        - contentinfo [ref=e12]: Marketing Team Lead
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Welcome back" [level=1] [ref=e16]
+        - paragraph [ref=e17]: Enter your credentials to access your account
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: Email
+          - textbox "Email" [ref=e21]
+        - generic [ref=e22]:
+          - generic [ref=e23]: Password
+          - generic [ref=e24]:
+            - textbox "Enter your password" [ref=e25]
+            - button [ref=e26]:
+              - img
+        - link "Forgot password?" [ref=e28]:
+          - /url: /auth/forgot-password
+        - button "Sign In" [ref=e29]
+      - generic [ref=e30]:
+        - generic [ref=e31]: Don't have an account?
+        - link "Sign up" [ref=e32]:
+          - /url: /auth/sign-up
+      - paragraph [ref=e33]:
+        - text: By signing in, you agree to our
+        - link "Terms of Service" [ref=e34]:
+          - /url: /terms
+        - text: and
+        - link "Privacy Policy" [ref=e35]:
+          - /url: /privacy
+        - text: .
+  - alert [ref=e36]
+  - button "Open Next.js Dev Tools" [ref=e42] [cursor=pointer]:
+    - img [ref=e43] [cursor=pointer]
+```

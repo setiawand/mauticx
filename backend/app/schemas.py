@@ -45,3 +45,4 @@ class CampaignIn(BaseModel):
     template_id: int
     segment_id: int
     send_at: Optional[str] = None
+    custom_content: Optional[str] = None  # Custom MJML content for this campaign
